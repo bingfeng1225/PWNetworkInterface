@@ -27,11 +27,13 @@ public abstract class ResponseObserver<T> implements Observer<T> {
         this.onCompleted();
     }
 
+    public void onCompleted(){
+
+    }
+
     protected abstract void onStart();
 
     protected abstract void onSuccess(T entity);
 
     protected abstract void onFailure(Throwable e);
-
-    protected abstract void onCompleted();
 }
