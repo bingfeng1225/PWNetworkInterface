@@ -17,13 +17,17 @@ public abstract class ResponseObserver<T> implements Observer<T> {
     @Override
     public void onNext(T entity) {
         this.onSuccess(entity);
-        this.onCompleted();
     }
 
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
         this.onFailure(e);
+        this.onCompleted();
+    }
+
+    @Override
+    public void onComplete() {
         this.onCompleted();
     }
 
