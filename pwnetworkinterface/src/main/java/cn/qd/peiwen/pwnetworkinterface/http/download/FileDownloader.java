@@ -20,9 +20,9 @@ public class FileDownloader implements Callback {
     private Call call = null;
     private OkHttpClient client = null;
     private Object downloaderObject = null;
-    private IFileDownloadListerer listener = null;
+    private IFileDownloadListener listener = null;
 
-    public FileDownloader(OkHttpClient client, Object downloaderObject, IFileDownloadListerer listener) {
+    public FileDownloader(OkHttpClient client, Object downloaderObject, IFileDownloadListener listener) {
         this.client = client;
         this.listener = listener;
         this.downloaderObject = downloaderObject;
