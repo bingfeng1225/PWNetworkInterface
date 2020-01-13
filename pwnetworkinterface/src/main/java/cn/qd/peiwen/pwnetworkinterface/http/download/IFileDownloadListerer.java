@@ -11,7 +11,7 @@ public interface IFileDownloadListerer {
 
     void onByteReaded(FileDownloader downloader, Object downloadObject, byte[] bytes, int length) throws IOException;
 
-    void onCompleted(FileDownloader downloader, Object downloadObject);
+    void onCompleted(FileDownloader downloader, Object downloadObject) throws IOException;
 
     void onFailured(FileDownloader downloader, Object downloadObject, boolean cancel);
 }
