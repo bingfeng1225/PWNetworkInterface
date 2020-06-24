@@ -1,15 +1,15 @@
-package cn.qd.peiwen.pwnetworkinterface.http;
+package cn.qd.peiwen.network.http;
 
+
+import android.text.TextUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import cn.qd.peiwen.pwlogger.PWLogger;
-import cn.qd.peiwen.pwnetworkinterface.http.interceptor.HeaderInterceptor;
-import cn.qd.peiwen.pwnetworkinterface.http.interceptor.QueryParamsInterceptor;
-import cn.qd.peiwen.pwnetworkinterface.http.interceptor.UserAgentInterceptor;
-import cn.qd.peiwen.pwtools.EmptyUtils;
+import cn.qd.peiwen.network.http.interceptor.HeaderInterceptor;
+import cn.qd.peiwen.network.http.interceptor.QueryParamsInterceptor;
+import cn.qd.peiwen.network.http.interceptor.UserAgentInterceptor;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -24,13 +24,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitBuilder {
     private String baseURL;                                     //服务器根地址
-
     //TimeOut
     private long readTimeout = 60;                              //读取超时时限s
     private long writeTimeout = 60;                             //链接超时时限s
     private long connectTimeout = 60;                           //链接超时时限s
 
-    private boolean enableLogger = false;
+    //Logger
+    private IRetrofitLogger logger;
 
     //Headers And Params
     private String userAgent;                                   //UserAgent请求头
@@ -41,6 +41,7 @@ public class RetrofitBuilder {
     public RetrofitBuilder() {
 
     }
+
 
     public RetrofitBuilder baseURL(String baseURL) {
         this.baseURL = baseURL;
@@ -62,13 +63,13 @@ public class RetrofitBuilder {
         return this;
     }
 
-    public RetrofitBuilder userAgent(String userAgent) {
-        this.userAgent = userAgent;
+    public RetrofitBuilder logger(IRetrofitLogger logger) {
+        this.logger = logger;
         return this;
     }
 
-    public RetrofitBuilder enableLogger(boolean enable) {
-        this.enableLogger = enable;
+    public RetrofitBuilder userAgent(String userAgent) {
+        this.userAgent = userAgent;
         return this;
     }
 
@@ -87,7 +88,6 @@ public class RetrofitBuilder {
         return this;
     }
 
-
     private Retrofit retrofit() {
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(this.baseURL)
@@ -102,23 +102,21 @@ public class RetrofitBuilder {
         builder.readTimeout(this.readTimeout, TimeUnit.SECONDS);
         builder.writeTimeout(this.writeTimeout, TimeUnit.SECONDS);
         builder.connectTimeout(this.connectTimeout, TimeUnit.SECONDS);
-        if (EmptyUtils.isNotEmpty(this.userAgent)) {
+        if (!TextUtils.isEmpty(this.userAgent)) {
             builder.addInterceptor(new UserAgentInterceptor(this.userAgent));
         }
-        if (EmptyUtils.isNotEmpty(this.headers)) {
+        if (null != this.headers && !this.headers.isEmpty()) {
             builder.addInterceptor(new HeaderInterceptor(this.headers));
         }
-        if (EmptyUtils.isNotEmpty(this.queryParams)) {
+        if (null != this.queryParams && !this.queryParams.isEmpty()) {
             builder.addInterceptor(new QueryParamsInterceptor(this.queryParams));
         }
 
         this.buildCustomInterceptors(builder);
 
-        if (this.enableLogger) {
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLogger());
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            builder.addNetworkInterceptor(interceptor);
-        }
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLogger());
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        builder.addNetworkInterceptor(interceptor);
 
         OkHttpClient httpClient = builder.build();
         httpClient.dispatcher().setMaxRequests(5);
@@ -126,7 +124,7 @@ public class RetrofitBuilder {
     }
 
     private void buildCustomInterceptors(OkHttpClient.Builder builder) {
-        if (EmptyUtils.isEmpty(this.customInterceptors)) {
+        if (null == this.customInterceptors || this.customInterceptors.isEmpty()) {
             return;
         }
         for (Interceptor item : this.customInterceptors) {
@@ -138,10 +136,12 @@ public class RetrofitBuilder {
         return this.retrofit().create(service);
     }
 
-    public class HttpLogger implements HttpLoggingInterceptor.Logger {
+    class HttpLogger implements HttpLoggingInterceptor.Logger {
         @Override
         public void log(String message) {
-            PWLogger.d("" + message);
+            if(null != logger){
+                logger.log(message);
+            }
         }
     }
 }

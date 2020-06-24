@@ -1,11 +1,10 @@
-package cn.qd.peiwen.pwnetworkinterface.http.interceptor;
+package cn.qd.peiwen.network.http.interceptor;
 
 
 
 import java.io.IOException;
 import java.util.Map;
 
-import cn.qd.peiwen.pwtools.EmptyUtils;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -31,7 +30,7 @@ public class HeaderInterceptor implements Interceptor {
     }
 
     private void addHeaders(Request.Builder builder){
-        if(EmptyUtils.isEmpty(this.headers)) {
+        if (null == this.headers || this.headers.isEmpty()) {
             return;
         }
         for (Map.Entry<String, String> entry : this.headers.entrySet()) {

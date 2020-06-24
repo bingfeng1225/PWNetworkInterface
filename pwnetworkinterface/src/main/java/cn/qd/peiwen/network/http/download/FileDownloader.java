@@ -1,10 +1,9 @@
-package cn.qd.peiwen.pwnetworkinterface.http.download;
+package cn.qd.peiwen.network.http.download;
 
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import cn.qd.peiwen.pwlogger.PWLogger;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -55,8 +54,9 @@ public class FileDownloader implements Callback {
 
     @Override
     public void onFailure(Call call, IOException e) {
+        e.printStackTrace();
         if (null != this.listener) {
-            this.listener.onFailured(this, this.downloaderObject, call.isCanceled());
+            this.listener.onFailured(this, this.downloaderObject, e, call.isCanceled());
         }
     }
 
@@ -86,9 +86,9 @@ public class FileDownloader implements Callback {
                 }
             }
         } catch (Exception e) {
-            PWLogger.d(e);
+            e.printStackTrace();
             if (null != this.listener) {
-                this.listener.onFailured(this, this.downloaderObject, call.isCanceled());
+                this.listener.onFailured(this, this.downloaderObject, e, call.isCanceled());
             }
         } finally {
             if (null != input) {

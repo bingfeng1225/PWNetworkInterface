@@ -1,4 +1,4 @@
-package cn.qd.peiwen.pwnetworkinterface.soap;
+package cn.qd.peiwen.network.soap;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
@@ -9,8 +9,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import cn.qd.peiwen.pwtools.EmptyUtils;
 
 
 /**
@@ -86,7 +84,7 @@ public class SoapRequest {
 
     private SoapObject buildRequest() {
         SoapObject request = new SoapObject(this.namespace,this.methodName);
-        if (EmptyUtils.isNotEmpty(this.parameters)) {
+        if (null != this.parameters && !this.parameters.isEmpty()) {
             for (String key : this.parameters.keySet()) {
                 request.addProperty(key, this.parameters.get(key));
             }

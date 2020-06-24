@@ -1,4 +1,4 @@
-package cn.qd.peiwen.pwnetworkinterface.http.download;
+package cn.qd.peiwen.network.http.download;
 
 import java.io.IOException;
 
@@ -13,5 +13,5 @@ public interface IFileDownloadListener {
 
     void onCompleted(FileDownloader downloader, Object downloadObject) throws IOException;
 
-    void onFailured(FileDownloader downloader, Object downloadObject, boolean cancel);
+    void onFailured(FileDownloader downloader, Object downloadObject, Throwable throwable, boolean cancel);
 }

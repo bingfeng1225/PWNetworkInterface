@@ -1,10 +1,9 @@
-package cn.qd.peiwen.pwnetworkinterface.http.interceptor;
+package cn.qd.peiwen.network.http.interceptor;
 
 
 import java.io.IOException;
 import java.util.Map;
 
-import cn.qd.peiwen.pwtools.EmptyUtils;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -32,7 +31,7 @@ public class QueryParamsInterceptor implements Interceptor {
     }
 
     private void addQueryParams(HttpUrl.Builder builder){
-        if(EmptyUtils.isEmpty(this.params)) {
+        if(params == null || params.isEmpty()) {
             return;
         }
         for (Map.Entry<String, String> entry : params.entrySet()) {
