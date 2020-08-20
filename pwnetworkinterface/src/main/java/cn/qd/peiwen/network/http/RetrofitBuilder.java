@@ -29,6 +29,7 @@ public class RetrofitBuilder {
     private long writeTimeout = 60;                             //链接超时时限s
     private long connectTimeout = 60;                           //链接超时时限s
 
+    private OkHttpClient httpClient;
     //Logger
     private IRetrofitLogger logger;
 
@@ -88,16 +89,24 @@ public class RetrofitBuilder {
         return this;
     }
 
+    public OkHttpClient httpClient() {
+        return httpClient;
+    }
+
+    public <T> T builder(Class<T> service) {
+        return this.retrofit().create(service);
+    }
+
     private Retrofit retrofit() {
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(this.baseURL)
-                .client(this.httpClient())
+                .client(this.makeHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         return builder.build();
     }
 
-    private OkHttpClient httpClient() {
+    private OkHttpClient makeHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(this.readTimeout, TimeUnit.SECONDS);
         builder.writeTimeout(this.writeTimeout, TimeUnit.SECONDS);
@@ -118,9 +127,9 @@ public class RetrofitBuilder {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.addNetworkInterceptor(interceptor);
 
-        OkHttpClient httpClient = builder.build();
-        httpClient.dispatcher().setMaxRequests(5);
-        return httpClient;
+        this.httpClient = builder.build();
+        this.httpClient.dispatcher().setMaxRequests(5);
+        return this.httpClient;
     }
 
     private void buildCustomInterceptors(OkHttpClient.Builder builder) {
@@ -132,14 +141,11 @@ public class RetrofitBuilder {
         }
     }
 
-    public <T> T builder(Class<T> service) {
-        return this.retrofit().create(service);
-    }
 
     class HttpLogger implements HttpLoggingInterceptor.Logger {
         @Override
         public void log(String message) {
-            if(null != logger){
+            if (null != logger) {
                 logger.log(message);
             }
         }
