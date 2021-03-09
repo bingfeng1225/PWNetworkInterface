@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.SocketFactory;
+
 import cn.qd.peiwen.network.http.interceptor.HeaderInterceptor;
 import cn.qd.peiwen.network.http.interceptor.QueryParamsInterceptor;
 import cn.qd.peiwen.network.http.interceptor.UserAgentInterceptor;
@@ -29,6 +31,8 @@ public class RetrofitBuilder {
     private long writeTimeout = 60;                             //链接超时时限s
     private long connectTimeout = 60;                           //链接超时时限s
 
+    private SocketFactory socketFactory;                        //链接超时时限s
+
     private OkHttpClient httpClient;
     //Logger
     private IRetrofitLogger logger;
@@ -42,7 +46,6 @@ public class RetrofitBuilder {
     public RetrofitBuilder() {
 
     }
-
 
     public RetrofitBuilder baseURL(String baseURL) {
         this.baseURL = baseURL;
@@ -61,6 +64,11 @@ public class RetrofitBuilder {
 
     public RetrofitBuilder connectTimeout(long connectTimeout) {
         this.connectTimeout = connectTimeout;
+        return this;
+    }
+
+    public RetrofitBuilder socketFactory(SocketFactory socketFactory) {
+        this.socketFactory = socketFactory;
         return this;
     }
 
@@ -111,6 +119,9 @@ public class RetrofitBuilder {
         builder.readTimeout(this.readTimeout, TimeUnit.SECONDS);
         builder.writeTimeout(this.writeTimeout, TimeUnit.SECONDS);
         builder.connectTimeout(this.connectTimeout, TimeUnit.SECONDS);
+        if(null != this.socketFactory) {
+            builder.socketFactory(this.socketFactory);
+        }
         if (!TextUtils.isEmpty(this.userAgent)) {
             builder.addInterceptor(new UserAgentInterceptor(this.userAgent));
         }
